@@ -1,25 +1,17 @@
-# This Docker file is for building this project on Codeship Pro
-# https://documentation.codeship.com/pro/languages-frameworks/nodejs/
+FROM cypress/included:13.6.3
 
-# use Cypress provided image with all dependencies included
-FROM cypress/base:24.11.0
-RUN node --version
-RUN npm --version
-WORKDIR /home/node/app
-# copy our test application
+WORKDIR /app
+
 COPY package.json package-lock.json ./
-COPY app ./app
-COPY serve.json ./
-COPY scripts ./scripts
-# copy Cypress tests
-COPY cypress.config.js cypress ./
-COPY cypress ./cypress
+COPY cypress.config.js ./
 
-# avoid many lines of progress bars during install
-# https://github.com/cypress-io/cypress/issues/1243
-ENV CI=1
+# 1. Cài thư viện (vẫn bỏ qua script để né lỗi Husky)
+RUN npm install --ignore-scripts
 
-# install npm dependencies and Cypress binary
-RUN npm ci
-# check if the binary was installed successfully
-RUN npx cypress verify
+# 2. FIX LỖI: Tự tay tải Cypress Binary về
+RUN npx cypress install
+
+COPY . .
+
+# 3. Chạy test
+ENTRYPOINT ["npm", "run", "test"]

@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  # Đây là Container chạy bài test của bạn
+  test-runner:
+    build: .
+    container_name: my-cypress-runner
+    # Cấu hình để test chạy xong thì tự tắt
+    command: ["--browser", "chrome"]
+    # Map thư mục để lấy video/ảnh kết quả ra ngoài máy thật
+    volumes:
+      - ./cypress/videos:/app/cypress/videos
+      - ./cypress/screenshots:/app/cypress/screenshots

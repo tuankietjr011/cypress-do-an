@@ -1,0 +1,39 @@
+name: E-commerce Automated Testing
+
+# Chạy khi có code push lên nhánh master hoặc main
+on: [push]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code (Tải code về)
+        uses: actions/checkout@v4
+
+      # Cài đặt môi trường Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Cài đặt thư viện (Giống hệt cách ta làm dưới máy)
+      - name: Install Dependencies
+        run: npm install --ignore-scripts
+
+      # Chạy Cypress bằng Action chính chủ (Rất tiện)
+      - name: Cypress Run
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          headless: true
+          # Nếu cần build app trước khi test thì thêm lệnh start
+          # start: npm start 
+          # wait-on: 'http://localhost:8080'
+
+      # Lưu video kết quả lại trên GitHub để xem sau
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos
+          path: cypress/videos
